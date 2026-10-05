@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Acervo da Biblioteca</title>
+<meta name="description" content="Procure os livros da biblioteca da escola e veja se estão disponíveis.">
+<meta name="theme-color" content="#0B0B0F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="marca" href="index.html">
+      <span class="marca-ponto" aria-hidden="true"></span>
+      <span class="marca-nome">Biblioteca</span>
+      <span class="marca-escola" id="nome-escola"></span>
+    </a>
+    <nav aria-label="Principal">
+      <a class="nav-link nav-atual" href="index.html" aria-current="page">Acervo</a>
+      <a class="nav-botao" href="admin.html">Entrar</a>
+    </nav>
+  </div>
+</header>
+
+<main class="pagina">
+  <h1 class="titulo-hero">Encontre seu<br>próximo livro.</h1>
+
+  <div class="busca" role="search">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <input id="busca" type="search" placeholder="Buscar por título, autor ou gênero" aria-label="Buscar por título, autor ou gênero" autocomplete="off">
+  </div>
+
+  <div class="filtros">
+    <div class="chips" id="generos" aria-label="Filtrar por gênero"></div>
+    <div class="segmentado" id="status" role="group" aria-label="Filtrar por disponibilidade">
+      <button type="button" data-status="todos" aria-pressed="true">Todos</button>
+      <button type="button" data-status="disponiveis" aria-pressed="false">Disponíveis</button>
+      <button type="button" data-status="emprestados" aria-pressed="false">Emprestados</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <section aria-labelledby="contagem">
+      <p class="contagem" id="contagem" aria-live="polite">Carregando</p>
+      <div class="grade" id="lista"></div>
+    </section>
+
+    <aside class="painel" id="painel" aria-label="Detalhes do livro">
+      <button type="button" class="painel-fechar" id="fechar-painel">Fechar</button>
+      <p class="painel-vazio">Escolha um livro para ver onde ele está na biblioteca.</p>
+      <div id="painel-conteudo"></div>
+    </aside>
+  </div>
+</main>
+
+<script type="module" src="js/catalog.js"></script>
+</body>
+</html>
