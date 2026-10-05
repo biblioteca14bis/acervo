@@ -1,5 +1,6 @@
 import { supabase } from "./supabase.js";
 import { escapeHtml, normalizar, formatarData, hoje, hojeMais, buscarTudo } from "./util.js";
+import { criarCombo, opcoesDoCampo, conferir } from "./combo.js";
 
 const $ = (seletor) => document.querySelector(seletor);
 
@@ -9,6 +10,7 @@ const botaoSair = $("#sair");
 
 let livros = [];
 let emprestimos = [];
+let opcoes = { genero: [], editora: [], autor: [] }; // nomes já cadastrados, para as sugestões
 const livroPorRotulo = new Map(); // texto do campo "Livro" -> id
 
 // ---------- mensagens ----------
@@ -108,6 +110,12 @@ async function carregarLivros() {
     supabase.from("livros").select("*").order("titulo").range(de, ate)
   );
 
+  opcoes = {
+    genero: opcoesDoCampo(livros, "genero"),
+    editora: opcoesDoCampo(livros, "editora"),
+    autor: opcoesDoCampo(livros, "autor"),
+  };
+
   // Lista de sugestões do campo "Livro" (só os ativos).
   livroPorRotulo.clear();
   $("#lista-livros").innerHTML = livros
@@ -157,6 +165,12 @@ $("#filtro-livros").addEventListener("input", renderLivros);
 
 let editandoId = null;
 const formLivro = $("#form-livro");
+const combos = {
+  genero: criarCombo(formLivro.elements.genero, () => opcoes.genero, { avisarParecidos: true }),
+  editora: criarCombo(formLivro.elements.editora, () => opcoes.editora, { avisarParecidos: true }),
+  autor: criarCombo(formLivro.elements.autor, () => opcoes.autor),
+};
+const atualizarDicas = () => Object.values(combos).forEach((c) => c.atualizarDica());
 const CAMPOS_LIVRO = ["tombo", "titulo", "autor", "editora", "genero", "estante", "prateleira", "exemplares"];
 
 function dadosDoFormulario() {
@@ -182,6 +196,7 @@ function proximoTombo(tombo) {
 function entrarModoEdicao(livro) {
   editandoId = livro.id;
   CAMPOS_LIVRO.forEach((c) => (formLivro.elements[c].value = livro[c] ?? ""));
+  atualizarDicas();
   $("#titulo-form-livro").textContent = "Editar livro";
   $("#botao-livro").textContent = "Salvar alterações";
   $("#cancelar-edicao").hidden = false;
@@ -194,6 +209,7 @@ function sairDoModoEdicao() {
   editandoId = null;
   formLivro.reset();
   formLivro.elements.exemplares.value = 1;
+  atualizarDicas();
   $("#titulo-form-livro").textContent = "Cadastrar livro";
   $("#botao-livro").textContent = "Cadastrar livro";
   $("#cancelar-edicao").hidden = true;
@@ -202,6 +218,25 @@ function sairDoModoEdicao() {
 formLivro.addEventListener("submit", async (e) => {
   e.preventDefault();
   const msg = $("#msg-livro");
+
+  // Evita "Fantasia", "Fatasia" e "Fantsia" como três gêneros diferentes.
+  for (const campo of ["genero", "editora"]) {
+    const el = formLivro.elements[campo];
+    const r = conferir(el.value, opcoes[campo]);
+    if (r.exato && r.exato.valor !== el.value.trim()) el.value = r.exato.valor;
+    if (r.parecido) {
+      const digitado = el.value.trim();
+      const seguir = window.confirm(
+        `“${digitado}” parece um erro de digitação de “${r.parecido.valor}”, que já está cadastrado.\n\n` +
+          `OK: cadastrar “${digitado}” mesmo assim.\nCancelar: voltar e corrigir.`
+      );
+      if (!seguir) {
+        el.focus();
+        return;
+      }
+    }
+  }
+
   const dados = dadosDoFormulario();
   const editando = editandoId !== null;
 
@@ -225,6 +260,7 @@ formLivro.addEventListener("submit", async (e) => {
     formLivro.elements.autor.value = "";
     formLivro.elements.editora.value = "";
     formLivro.elements.exemplares.value = 1;
+    atualizarDicas();
     mostrar(msg, `"${dados.titulo}" cadastrado.`, "ok");
     formLivro.elements.titulo.focus();
   }
@@ -256,22 +292,6 @@ $("#lista-livros-admin").addEventListener("click", async (e) => {
     }
     await carregarLivros();
   }
-});
-
-// Backup: baixa o acervo inteiro (inclusive livros desativados) em CSV.
-$("#exportar").addEventListener("click", () => {
-  const colunas = [...CAMPOS_LIVRO, "ativo"];
-  const celula = (valor) => `"${String(valor ?? "").replace(/"/g, '""')}"`;
-  const linhas = [
-    colunas.join(","),
-    ...livros.map((l) => colunas.map((c) => celula(l[c])).join(",")),
-  ];
-  const arquivo = new Blob(["\ufeff" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(arquivo);
-  link.download = `acervo-${hoje()}.csv`;
-  link.click();
-  URL.revokeObjectURL(link.href);
 });
 
 // ---------- empréstimos ----------

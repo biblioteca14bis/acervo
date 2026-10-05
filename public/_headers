@@ -5,3 +5,6 @@
 
 /admin.html
   X-Robots-Tag: noindex
+
+/backup.html
+  X-Robots-Tag: noindex

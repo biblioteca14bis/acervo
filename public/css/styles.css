@@ -75,7 +75,8 @@ button { cursor: pointer; }
   font-size: clamp(38px, 6vw, 56px);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1;
+  line-height: 1.05;
+  text-wrap: balance;
 }
 
 .busca {
@@ -369,3 +370,68 @@ button { cursor: pointer; }
   .admin { padding-left: 16px; padding-right: 16px; }
   .linha { flex-direction: column; align-items: stretch; }
 }
+
+/* ---------- sobre e rodapé ---------- */
+
+.sobre p { margin: 0; max-width: 62ch; font-size: 18px; line-height: 1.65; color: #D6D6DD; }
+.sobre .credito { margin-top: 12px; max-width: 62ch; padding-top: 20px; border-top: 1px solid var(--linha); font-size: 14px; color: var(--suave); }
+.credito a { color: var(--texto); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.rodape { max-width: 1120px; margin: 0 auto; padding: 0 24px 40px; font-size: 14px; }
+.rodape a { color: var(--suave); text-decoration: underline; text-underline-offset: 3px; padding: 10px 0; display: inline-block; }
+.rodape a:hover { color: var(--texto); }
+
+/* ---------- link de backup e página de backup ---------- */
+
+.abas-linha { display: flex; align-items: center; justify-content: space-between; gap: 8px 24px; flex-wrap: wrap; }
+.link-discreto { font-size: 14px; color: var(--suave); text-decoration: underline; text-underline-offset: 3px; padding: 12px 4px; }
+.link-discreto:hover { color: var(--texto); }
+
+.backup-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px 24px; padding: 20px 0; border-top: 1px solid var(--linha); flex-wrap: wrap; }
+.bloco > h2 + .backup-item { border-top: 0; padding-top: 4px; }
+.backup-item > div { flex: 1; min-width: 260px; }
+.backup-item p { margin: 0; }
+.backup-item.restaurar { display: block; }
+.backup-item.restaurar .linha-sub { margin-top: 2px; }
+
+.aviso-caixa { margin: 12px 0; padding: 14px 16px; border-radius: 14px; background: rgba(255, 181, 71, 0.1); border: 1px solid rgba(255, 181, 71, 0.35); color: #FFD9A0; font-size: 14px; line-height: 1.5; }
+.aviso-caixa strong { color: var(--aviso); }
+
+.marcar { display: flex; align-items: flex-start; gap: 12px; margin: 12px 0; font-size: 15px; font-weight: 600; cursor: pointer; }
+.marcar input { width: 22px; height: 22px; flex: none; accent-color: var(--destaque); margin-top: 1px; }
+
+.previa { margin: 16px 0 8px; padding: 16px 18px; background: var(--campo); border: 1px solid var(--linha); border-radius: 14px; display: flex; flex-direction: column; gap: 10px; font-size: 15px; }
+.previa p { margin: 0; }
+.resumo { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+.resumo .erro { color: var(--erro); }
+.detalhes summary { cursor: pointer; font-weight: 600; font-size: 14px; min-height: 32px; display: flex; align-items: center; }
+.detalhes ul { margin: 6px 0 0; padding-left: 20px; font-size: 14px; color: var(--suave); display: flex; flex-direction: column; gap: 4px; }
+
+.botao:disabled { opacity: 0.4; cursor: not-allowed; }
+.campo input[type="file"] { height: auto; padding: 10px 12px; }
+
+/* ---------- caixinha de sugestões ---------- */
+
+.combo { position: relative; display: flex; flex-direction: column; }
+.combo-lista {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 4px);
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  max-height: 260px;
+  overflow: auto;
+  background: var(--cartao-2);
+  border: 1px solid var(--linha-forte);
+  border-radius: 14px;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
+}
+.combo-lista[hidden] { display: none; }
+.combo-lista li { display: flex; justify-content: space-between; gap: 12px; padding: 11px 12px; min-height: 44px; align-items: center; border-radius: 10px; cursor: pointer; color: var(--texto); font-size: 15px; font-weight: 600; }
+.combo-lista li:hover, .combo-lista li[aria-selected="true"] { background: rgba(255, 255, 255, 0.1); }
+.combo-qtd { color: var(--suave); font-size: 13px; font-weight: 500; white-space: nowrap; }
+.combo-dica { margin: 6px 0 0; font-size: 13px; font-weight: 600; color: var(--aviso); }
+.combo-usar { margin-left: 4px; padding: 6px 10px; min-height: 32px; border: 1px solid var(--aviso); border-radius: 8px; background: transparent; color: var(--aviso); font-weight: 700; font-size: 13px; }

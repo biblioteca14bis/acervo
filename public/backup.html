@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Opções de backup | Biblioteca</title>
+<meta name="theme-color" content="#0B0B0F">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <a class="marca" href="index.html">
+      <img class="marca-logo" src="logo-14bis.svg" alt="Biblioteca 14 Bis" width="266" height="60">
+      <span class="marca-escola">Área da equipe</span>
+    </a>
+    <nav aria-label="Principal">
+      <a class="nav-link" href="admin.html">Painel da equipe</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Quem não é administrador vê só isto -->
+<main class="admin login" id="acesso-negado" hidden>
+  <h1>Área restrita</h1>
+  <div class="bloco">
+    <p class="vazio" id="texto-acesso">Esta página é só para a equipe da biblioteca.</p>
+    <p style="margin: 16px 0 0"><a class="botao" style="display: inline-flex; align-items: center" href="admin.html">Entrar na área da equipe</a></p>
+  </div>
+</main>
+
+<main class="admin" id="conteudo" hidden>
+  <h1>Opções de backup</h1>
+  <p class="vazio" style="max-width: 62ch">
+    Guarde uma cópia do acervo e recupere informações quando precisar. Os arquivos são tabelas (CSV) que abrem no Google Planilhas e no Excel.
+  </p>
+
+  <!-- ============ BAIXAR ============ -->
+  <section class="bloco" aria-labelledby="t-baixar">
+    <h2 id="t-baixar">Baixar backup</h2>
+
+    <div class="backup-item">
+      <div>
+        <p class="linha-titulo">Livros</p>
+        <p class="linha-sub">Todos os livros e suas informações, inclusive os desativados.</p>
+        <p class="linha-sub" id="ultimo-livros"></p>
+      </div>
+      <button type="button" class="botao" id="baixar-livros">Baixar livros (CSV)</button>
+    </div>
+
+    <div class="backup-item">
+      <div>
+        <p class="linha-titulo">Empréstimos</p>
+        <p class="linha-sub">Histórico completo de empréstimos e devoluções.</p>
+        <p class="linha-sub" id="ultimo-emprestimos"></p>
+        <div class="aviso-caixa" role="note">
+          <strong>Atenção:</strong> este arquivo contém nomes e turmas de alunos. Guarde em um local restrito, como uma pasta do Drive só da equipe, e não envie por mensagem ou e-mail.
+        </div>
+        <label class="marcar">
+          <input type="checkbox" id="ciente-emprestimos">
+          Entendi e vou guardar o arquivo em local restrito
+        </label>
+      </div>
+      <button type="button" class="botao" id="baixar-emprestimos" disabled>Baixar empréstimos (CSV)</button>
+    </div>
+    <p class="mensagem" id="msg-baixar" role="status"></p>
+  </section>
+
+  <!-- ============ RESTAURAR ============ -->
+  <section class="bloco" aria-labelledby="t-restaurar">
+    <h2 id="t-restaurar">Restaurar a partir de um arquivo</h2>
+
+    <div class="aviso-caixa" role="note">
+      <strong>Antes de restaurar:</strong> baixe um backup atual acima, para poder voltar atrás se algo sair errado.
+      Restaurar <strong>nunca apaga</strong> livros nem empréstimos. Livros que já existem (mesmo tombo) são atualizados com os dados do arquivo, e os que não existem são criados.
+      Você sempre vê um resumo antes de confirmar.
+    </div>
+
+    <div class="backup-item restaurar">
+      <div class="restaurar-corpo">
+        <p class="linha-titulo">Restaurar livros</p>
+        <p class="linha-sub">Use o arquivo baixado em "Baixar livros", com ou sem alterações.</p>
+        <label class="campo" style="margin-top: 12px">Arquivo CSV
+          <input type="file" id="arquivo-livros" accept=".csv,text/csv">
+        </label>
+        <div id="previa-livros" class="previa" hidden></div>
+        <div id="confirmar-livros" hidden>
+          <label class="marcar">
+            <input type="checkbox" id="ciente-livros">
+            Revisei o resumo e quero aplicar estas mudanças ao acervo
+          </label>
+          <button type="button" class="botao" id="aplicar-livros" disabled>Restaurar livros</button>
+        </div>
+        <p class="mensagem" id="msg-livros" role="status"></p>
+      </div>
+    </div>
+
+    <div class="backup-item restaurar">
+      <div class="restaurar-corpo">
+        <p class="linha-titulo">Restaurar empréstimos</p>
+        <p class="linha-sub">Só acrescenta empréstimos que ainda não existem. Os livros precisam estar cadastrados, porque a ligação é feita pelo tombo.</p>
+        <label class="campo" style="margin-top: 12px">Arquivo CSV
+          <input type="file" id="arquivo-emprestimos" accept=".csv,text/csv">
+        </label>
+        <div id="previa-emprestimos" class="previa" hidden></div>
+        <div id="confirmar-emprestimos" hidden>
+          <label class="marcar">
+            <input type="checkbox" id="ciente-restaurar-emprestimos">
+            Revisei o resumo e quero acrescentar estes empréstimos
+          </label>
+          <button type="button" class="botao" id="aplicar-emprestimos" disabled>Restaurar empréstimos</button>
+        </div>
+        <p class="mensagem" id="msg-emprestimos" role="status"></p>
+      </div>
+    </div>
+
+    <p class="linha-sub">
+      Dica: ao abrir o arquivo no Excel, os zeros à esquerda do tombo (0001) podem sumir. O site tenta reconhecer esses casos, mas o Google Planilhas ou a coluna formatada como texto evitam o problema.
+    </p>
+  </section>
+</main>
+
+<script type="module" src="js/backup.js"></script>
+</body>
+</html>

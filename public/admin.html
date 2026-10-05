@@ -46,9 +46,12 @@
 <main class="admin" id="tela-app" hidden>
   <h1>Painel da equipe</h1>
 
-  <div class="abas" role="tablist" aria-label="Seções">
-    <button type="button" role="tab" id="aba-emprestimos" aria-selected="true" aria-controls="painel-emprestimos">Empréstimos</button>
-    <button type="button" role="tab" id="aba-livros" aria-selected="false" aria-controls="painel-livros">Livros</button>
+  <div class="abas-linha">
+    <div class="abas" role="tablist" aria-label="Seções">
+      <button type="button" role="tab" id="aba-emprestimos" aria-selected="true" aria-controls="painel-emprestimos">Empréstimos</button>
+      <button type="button" role="tab" id="aba-livros" aria-selected="false" aria-controls="painel-livros">Livros</button>
+    </div>
+    <a class="link-discreto" href="backup.html">Opções de backup</a>
   </div>
 
   <!-- Empréstimos -->
@@ -125,7 +128,6 @@
         <label class="campo" style="flex: 1; min-width: 220px">Filtrar
           <input type="search" id="filtro-livros" placeholder="Tombo, título ou autor">
         </label>
-        <button type="button" class="botao-suave" id="exportar">Exportar acervo (CSV)</button>
       </div>
       <div class="linhas" id="lista-livros-admin"></div>
     </div>

@@ -118,6 +118,11 @@ declare
   total  int;
   abertos int;
 begin
+  -- Empréstimo que já entra como devolvido não ocupa nenhum exemplar.
+  if new.devolvido_em is not null then
+    return new;
+  end if;
+
   select exemplares into total from public.livros where id = new.livro_id;
   select count(*) into abertos
     from public.emprestimos
