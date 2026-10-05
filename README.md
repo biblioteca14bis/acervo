@@ -54,8 +54,8 @@ select id from auth.users where email = 'email-do-administrador@escola.com';
 
 Abra `public/js/config.js` e preencha:
 
-- `SUPABASE_URL` e `SUPABASE_ANON_KEY` (em **Project Settings > API**). A chave `anon` é pública por natureza. Nunca use a `service_role` no site.
-- `NOME_ESCOLA`.
+- `SUPABASE_URL` e `SUPABASE_ANON_KEY` (em **Project Settings > API**). Use a chave pública (a "publishable", ou a "anon" nos projetos mais antigos). Ela é pública por natureza. Nunca use a chave "secret" nem a `service_role` no site.
+- `NOME_BIBLIOTECA` e `NOME_ESCOLA`.
 
 ### 3. GitHub
 

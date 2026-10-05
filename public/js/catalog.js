@@ -1,5 +1,5 @@
 import { supabase } from "./supabase.js";
-import { NOME_ESCOLA } from "./config.js";
+import { NOME_BIBLIOTECA, NOME_ESCOLA } from "./config.js";
 import { escapeHtml, normalizar, formatarData, corDaCapa, buscarTudo } from "./util.js";
 
 const estado = {
@@ -11,6 +11,7 @@ const estado = {
 };
 
 const el = {
+  biblioteca: document.querySelector("#nome-biblioteca"),
   escola: document.querySelector("#nome-escola"),
   busca: document.querySelector("#busca"),
   generos: document.querySelector("#generos"),
@@ -21,7 +22,9 @@ const el = {
   fechar: document.querySelector("#fechar-painel"),
 };
 
+el.biblioteca.textContent = NOME_BIBLIOTECA;
 el.escola.textContent = NOME_ESCOLA;
+document.title = `${NOME_BIBLIOTECA} | ${NOME_ESCOLA}`;
 
 // ---------- dados ----------
 

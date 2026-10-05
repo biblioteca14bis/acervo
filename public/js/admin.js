@@ -1,4 +1,5 @@
 import { supabase } from "./supabase.js";
+import { NOME_BIBLIOTECA } from "./config.js";
 import { escapeHtml, normalizar, formatarData, hoje, hojeMais, buscarTudo } from "./util.js";
 
 const $ = (seletor) => document.querySelector(seletor);
@@ -6,6 +7,8 @@ const $ = (seletor) => document.querySelector(seletor);
 const telaLogin = $("#tela-login");
 const telaApp = $("#tela-app");
 const botaoSair = $("#sair");
+
+$("#nome-biblioteca").textContent = NOME_BIBLIOTECA;
 
 let livros = [];
 let emprestimos = [];
