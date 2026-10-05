@@ -9,7 +9,7 @@ create extension if not exists unaccent with schema extensions;
 
 create table public.livros (
   id          bigint generated always as identity primary key,
-  tombo       text unique not null,          -- codigo unico do livro (chave da sincronizacao com a planilha)
+  tombo       text unique not null,          -- numero de controle unico de cada livro
   titulo      text not null,
   autor       text,
   editora     text,

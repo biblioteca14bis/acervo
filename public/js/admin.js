@@ -145,9 +145,12 @@ function renderLivros() {
               l.exemplares === 1 ? "exemplar" : "exemplares"
             }${l.ativo ? "" : " · desativado"}</span>
         </div>
-        <button type="button" class="botao-suave" data-acao="alternar-ativo" data-id="${l.id}">
-          ${l.ativo ? "Desativar" : "Reativar"}
-        </button>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap">
+          <button type="button" class="botao-suave" data-acao="editar" data-id="${l.id}">Editar</button>
+          <button type="button" class="botao-suave" data-acao="alternar-ativo" data-id="${l.id}">${
+            l.ativo ? "Desativar" : "Reativar"
+          }</button>
+        </div>
       </div>`
           )
           .join("");
@@ -155,21 +158,59 @@ function renderLivros() {
 
 $("#filtro-livros").addEventListener("input", renderLivros);
 
-$("#form-livro").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const form = new FormData(e.target);
-  const msg = $("#msg-livro");
+let editandoId = null;
+const formLivro = $("#form-livro");
+const CAMPOS_LIVRO = ["tombo", "titulo", "autor", "editora", "genero", "estante", "prateleira", "exemplares"];
 
-  const { error } = await supabase.from("livros").insert({
-    tombo: form.get("tombo").trim(),
-    titulo: form.get("titulo").trim(),
-    autor: form.get("autor").trim() || null,
-    editora: form.get("editora").trim() || null,
-    genero: form.get("genero").trim() || null,
-    estante: form.get("estante").trim() || null,
-    prateleira: form.get("prateleira").trim() || null,
-    exemplares: Number(form.get("exemplares")),
-  });
+function dadosDoFormulario() {
+  const f = new FormData(formLivro);
+  const opcional = (nome) => f.get(nome).trim() || null;
+  return {
+    tombo: f.get("tombo").trim(),
+    titulo: f.get("titulo").trim(),
+    autor: opcional("autor"),
+    editora: opcional("editora"),
+    genero: opcional("genero"),
+    estante: opcional("estante"),
+    prateleira: opcional("prateleira"),
+    exemplares: Number(f.get("exemplares")),
+  };
+}
+
+// "0007" vira "0008". Se o tombo não for só número, não sugere nada.
+function proximoTombo(tombo) {
+  return /^\d+$/.test(tombo) ? String(Number(tombo) + 1).padStart(tombo.length, "0") : "";
+}
+
+function entrarModoEdicao(livro) {
+  editandoId = livro.id;
+  CAMPOS_LIVRO.forEach((c) => (formLivro.elements[c].value = livro[c] ?? ""));
+  $("#titulo-form-livro").textContent = "Editar livro";
+  $("#botao-livro").textContent = "Salvar alterações";
+  $("#cancelar-edicao").hidden = false;
+  mostrar($("#msg-livro"), "");
+  formLivro.scrollIntoView({ behavior: "smooth", block: "start" });
+  formLivro.elements.titulo.focus();
+}
+
+function sairDoModoEdicao() {
+  editandoId = null;
+  formLivro.reset();
+  formLivro.elements.exemplares.value = 1;
+  $("#titulo-form-livro").textContent = "Cadastrar livro";
+  $("#botao-livro").textContent = "Cadastrar livro";
+  $("#cancelar-edicao").hidden = true;
+}
+
+formLivro.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const msg = $("#msg-livro");
+  const dados = dadosDoFormulario();
+  const editando = editandoId !== null;
+
+  const { error } = editando
+    ? await supabase.from("livros").update(dados).eq("id", editandoId)
+    : await supabase.from("livros").insert(dados);
 
   if (error) {
     const repetido = error.code === "23505";
@@ -177,25 +218,63 @@ $("#form-livro").addEventListener("submit", async (e) => {
     return;
   }
 
-  mostrar(msg, "Livro cadastrado.", "ok");
-  e.target.reset();
-  e.target.elements.exemplares.value = 1;
+  if (editando) {
+    sairDoModoEdicao();
+    mostrar(msg, "Alterações salvas.", "ok");
+  } else {
+    // Cadastro rápido: mantém gênero, estante e prateleira para o próximo livro.
+    formLivro.elements.tombo.value = proximoTombo(dados.tombo);
+    formLivro.elements.titulo.value = "";
+    formLivro.elements.autor.value = "";
+    formLivro.elements.editora.value = "";
+    formLivro.elements.exemplares.value = 1;
+    mostrar(msg, `"${dados.titulo}" cadastrado.`, "ok");
+    formLivro.elements.titulo.focus();
+  }
   await carregarLivros();
 });
 
+$("#cancelar-edicao").addEventListener("click", () => {
+  sairDoModoEdicao();
+  mostrar($("#msg-livro"), "");
+});
+
 $("#lista-livros-admin").addEventListener("click", async (e) => {
-  const botao = e.target.closest('[data-acao="alternar-ativo"]');
+  const botao = e.target.closest("[data-acao]");
   if (!botao) return;
 
   const livro = livros.find((l) => l.id === Number(botao.dataset.id));
   if (!livro) return;
 
-  const { error } = await supabase.from("livros").update({ ativo: !livro.ativo }).eq("id", livro.id);
-  if (error) {
-    mostrar($("#msg-livro"), `Erro: ${error.message}`, "erro");
+  if (botao.dataset.acao === "editar") {
+    entrarModoEdicao(livro);
     return;
   }
-  await carregarLivros();
+
+  if (botao.dataset.acao === "alternar-ativo") {
+    const { error } = await supabase.from("livros").update({ ativo: !livro.ativo }).eq("id", livro.id);
+    if (error) {
+      mostrar($("#msg-livro"), `Erro: ${error.message}`, "erro");
+      return;
+    }
+    await carregarLivros();
+  }
+});
+
+// Backup: baixa o acervo inteiro (inclusive livros desativados) em CSV.
+$("#exportar").addEventListener("click", () => {
+  const colunas = [...CAMPOS_LIVRO, "ativo"];
+  const celula = (valor) => `"${String(valor ?? "").replace(/"/g, '""')}"`;
+  const linhas = [
+    colunas.join(","),
+    ...livros.map((l) => colunas.map((c) => celula(l[c])).join(",")),
+  ];
+  const arquivo = new Blob(["\ufeff" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(arquivo);
+  link.download = `acervo-${hoje()}.csv`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 });
 
 // ---------- empréstimos ----------

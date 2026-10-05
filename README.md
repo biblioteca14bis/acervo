@@ -77,21 +77,21 @@ No GitHub, em **Settings > Secrets and variables > Actions**, crie dois segredos
 
 ## Cadastro dos livros
 
-Duas formas:
+O acervo é cadastrado direto pelo site, na aba **Livros** do painel da equipe. Não há planilha para manter em paralelo.
 
-- **Pela tela:** aba **Livros** do painel da equipe.
-- **Em lote, por planilha:** exporte do Google Planilhas como CSV com estas colunas, nesta grafia: `tombo, titulo, autor, editora, genero, estante, prateleira, exemplares`. No Supabase, em **Table Editor > livros > Insert > Import data from CSV**.
+- **Cadastro rápido:** depois de salvar um livro, o gênero, a estante e a prateleira continuam preenchidos e o próximo tombo já vem sugerido (0007 vira 0008). Dá para catalogar uma prateleira inteira só digitando título e autor.
+- **Editar:** cada livro tem um botão **Editar**. Corrija o que precisar e clique em **Salvar alterações**.
+- **Desativar:** em vez de apagar, desative o livro. Ele sai do catálogo público, mas o histórico de empréstimos continua guardado.
+- **Tombo:** número de controle de cada livro. Precisa ser único.
 
-O `tombo` precisa ser único. É a chave que vai permitir sincronizar com a planilha mais para frente.
+Se um dia houver uma lista pronta em planilha, ainda dá para importar de uma vez: exporte como CSV com as colunas `tombo, titulo, autor, editora, genero, estante, prateleira, exemplares` e use, no Supabase, **Table Editor > livros > Insert > Import data from CSV**.
 
 ## Backups
 
-O plano gratuito não tem backup automático. De tempos em tempos, exporte as tabelas `livros` e `emprestimos` em CSV pelo Table Editor.
+O plano gratuito não tem backup automático. No painel da equipe, na aba **Livros**, o botão **Exportar acervo (CSV)** baixa todos os livros (inclusive os desativados). Faça isso de tempos em tempos e guarde o arquivo em outro lugar, como o Google Drive da escola.
 
 ## Próximos passos possíveis
 
-- Editar livros pela tela (hoje só cadastra, ativa e desativa).
 - Histórico de empréstimos por livro e por aluno.
-- Sincronização com a planilha do Google (Apps Script).
 - Páginas de novidades e de horários.
 - Reserva de livros, se a equipe sentir falta.
