@@ -1,0 +1,12 @@
+{
+  // Nome do projeto no Cloudflare. Ele vira o começo do endereço:
+  // acervo.SUA-CONTA.workers.dev. Pode trocar antes do primeiro deploy.
+  "name": "acervo",
+  "compatibility_date": "2026-10-01",
+
+  // O site é só a pasta public. O resto do repositório (banco, README,
+  // tarefas do GitHub) não vai para o ar.
+  "assets": {
+    "directory": "./public"
+  }
+}
